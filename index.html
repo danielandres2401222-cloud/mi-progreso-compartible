@@ -75,6 +75,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--fg)}
 .dsel{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .dsel button{height:42px;border-radius:12px;border:1px solid var(--line2);background:var(--card);color:var(--fg);font:inherit;font-weight:700}
 .dsel button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.eqs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.eqs button{border:1px solid var(--line2);background:var(--card);border-radius:14px;padding:8px 4px;font:inherit;font-size:12px;color:var(--fg);display:grid;gap:3px;justify-items:center;line-height:1.15}
+.eqs button span{font-size:22px}.eqs button.on{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:700}
 .chk{display:flex!important;gap:10px;align-items:center;color:var(--fg)!important;font-size:14.5px!important;margin-top:14px!important}.chk input{width:auto}
 .pl{display:grid;gap:8px}.pl .it2{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
 .pl .it2>span{font-size:22px;line-height:1}.pl .it2 b.t2{display:block;font-size:15px;color:var(--fg)}.pl .it2 div{font-size:13.5px;color:var(--mut)}
@@ -265,6 +268,17 @@ function props(list,dark){
     if(p==='counter') out.push(['rect',{x:188,y:150,width:60,height:50,fill,stroke:st,'stroke-width':2}]);
     if(p==='wall') out.push(['rect',{x:184,y:20,width:12,height:180,fill,stroke:st,'stroke-width':2}]);
     if(p==='mat') out.push(['rect',{x:28,y:198,width:190,height:4,rx:2,fill:dark?'#3a3a3a':'#cfcfcf'}]);
+    const mc=dark?'#8a8a8a':'#9a9a9a';
+    if(p==='bench'){ out.push(['rect',{x:36,y:166,width:112,height:7,rx:3,fill:mc}],ln([50,173],[50,200],mc,4),ln([134,173],[134,200],mc,4)); }
+    if(p==='benchShort'){ out.push(['rect',{x:24,y:162,width:56,height:7,rx:3,fill:mc}],ln([34,169],[34,200],mc,4),ln([70,169],[70,200],mc,4)); }
+    if(p==='step') out.push(['rect',{x:128,y:166,width:62,height:34,rx:3,fill,stroke:st,'stroke-width':2}]);
+    if(p==='pullbar') out.push(ln([62,42],[178,42],mc,5),ln([66,42],[66,200],mc,3),ln([174,42],[174,200],mc,3));
+    if(p==='poleaAlta') out.push(['rect',{x:196,y:10,width:10,height:190,fill,stroke:st,'stroke-width':2}],ln([106,12],[200,12],mc,4),['circle',{cx:106,cy:14,r:4,fill:mc}]);
+    if(p==='poleaDer') out.push(['rect',{x:196,y:40,width:10,height:160,fill,stroke:st,'stroke-width':2}],['circle',{cx:200,cy:150,r:4,fill:mc}]);
+    if(p==='poleaIzq') out.push(['rect',{x:22,y:40,width:10,height:160,fill,stroke:st,'stroke-width':2}],['circle',{cx:30,cy:112,r:4,fill:mc}]);
+    if(p==='puerta') out.push(['rect',{x:212,y:24,width:8,height:176,fill,stroke:st,'stroke-width':2}]);
+    if(p==='treadmill') out.push(['rect',{x:56,y:195,width:150,height:6,rx:3,fill:mc}],ln([200,196],[208,118],mc,4),ln([208,118],[184,114],mc,4));
+    if(p==='bike') out.push(ln([98,140],[120,140],mc,5),ln([112,140],[124,176],mc,4),['circle',{cx:162,cy:178,r:17,fill:'none',stroke:mc,'stroke-width':4}],ln([124,176],[160,118],mc,4),ln([150,116],[166,116],mc,5),ln([92,200],[184,200],mc,5),['circle',{cx:124,cy:176,r:5,fill:mc}]);
   });
   return out;
 }
@@ -283,6 +297,10 @@ function figureShapes(ex,pose,dark,tms){
   leg(F.legs[0],fg); arm(F.arms[0],fg);
   if(w===true||(Array.isArray(w)&&w[0])) db(F.arms[0][1],fg);
   if(w==='goblet'){const m=lerp(F.arms[0][1],F.arms[1][1],.5); sh.push(['rect',{x:m[0]-6.5,y:m[1]-12,width:13,height:24,rx:4,fill:fg}]);}
+  if(w==='barra'){const m=lerp(F.arms[0][1],F.arms[1][1],.5); sh.push(['circle',{cx:m[0],cy:m[1],r:14,fill:fg}],['circle',{cx:m[0],cy:m[1],r:9,fill:'none',stroke:hole,'stroke-width':1.5}],['circle',{cx:m[0],cy:m[1],r:2.5,fill:hole}]);}
+  if(w==='kb'){const m=lerp(F.arms[0][1],F.arms[1][1],.5); sh.push(['circle',{cx:m[0],cy:m[1]+10,r:9,fill:fg}],['circle',{cx:m[0],cy:m[1]+1,r:5,fill:'none',stroke:fg,'stroke-width':3}]);}
+  if(ex.cable) sh.push(ln(F.arms[0][1],ex.cable,dark?'#9a9a9a':'#7a7a7a',2));
+  if(ex.banda) {sh.push(ln(F.arms[0][1],ex.banda,'#ff7a1a',3)); sh[sh.length-1][1].opacity=0.75;}
   // ---- efecto "quema": músculos que trabaja el ejercicio ----
   const t=(tms||0)/1000, pulse=0.5+0.5*Math.sin(t*5.2);
   const glow=(p,q,wd)=>{ sh.push(ln(p,q,'#ff7a1a',wd+9)); sh[sh.length-1][1].opacity=0.14+0.16*pulse;
@@ -484,12 +502,83 @@ function workoutX(id,pi){
 
 /* músculos que trabaja cada ejercicio (efecto quema) */
 (function(){const M={sentadilla_silla:['muslo','gluteo'],sentadilla_goblet:['muslo','gluteo','abdomen'],sentadilla_press:['muslo','gluteo','hombro','brazo'],zancada_atras:['muslo','gluteo'],zancada_peso:['muslo','gluteo'],bulgara:['muslo','gluteo'],peso_muerto:['gluteo','muslo','espalda'],puente_gluteo:['gluteo','muslo'],remo:['espalda','brazo'],remo_dos:['espalda','brazo'],press_hombros:['hombro','brazo'],flexion_meson:['pecho','brazo','hombro'],flexion_suelo:['pecho','brazo','hombro'],press_pecho_suelo:['pecho','brazo'],plancha_meson:['abdomen'],plancha_suelo:['abdomen','hombro'],escaladores_meson:['abdomen','muslo'],escaladores_suelo:['abdomen','muslo','hombro'],curl:['brazo'],elevacion_frontal:['hombro'],bicho_muerto:['abdomen'],marcha:['muslo','abdomen'],caminar:['muslo','pantorrilla'],trotar:['muslo','pantorrilla'],boxeo:['hombro','brazo'],rodilla_codo:['abdomen','muslo'],circulos_brazos:['hombro'],swing:['gluteo','muslo','espalda'],burpee:['muslo','pecho','abdomen']};for(const k in M) if(EX[k]) EX[k].m=M[k];})();
+
+/* ===== Ejercicios con implementos (barra, banco, máquina, dominadas, pesa rusa, bandas, trotadora, bicicleta) ===== */
+(function(){
+ const N=(k,o)=>{EX[k]=o};
+ N('sentadilla_barra',{n:'Sentadilla con barra',u:'reps',w:'barra',dur:1500,m:['muslo','gluteo','abdomen'],
+  c:['Barra apoyada en la parte alta de la espalda, no en el cuello.','Baja con el pecho arriba hasta que los muslos queden paralelos al suelo.','Sube empujando el suelo con todo el pie.'],
+  f:[ST({arms:[{a:-35,b:165},{a:-38,b:162}]}), ST({hip:[96,166],torso:146,arms:[{a:-69,b:131},{a:-72,b:128}]})]});
+ N('peso_muerto_barra',{n:'Peso muerto con barra',u:'reps',w:'barra',dur:1600,m:['gluteo','muslo','espalda'],
+  c:['Barra pegada a las piernas, espalda recta todo el tiempo.','Lleva la cadera atrás y baja la barra rozando los muslos.','Sube apretando glúteos, sin echarte hacia atrás.'],
+  f:[ST({arms:[{a:2,b:2},{a:-2,b:-2}]}), ST({hip:[98,140],torso:112,arms:[{a:0,b:0},{a:-2,b:-2}]})]});
+ N('remo_barra',{n:'Remo con barra',u:'reps',w:'barra',dur:1300,m:['espalda','brazo'],
+  c:['Inclínate con la espalda recta y rodillas un poco dobladas.','Lleva la barra hacia el ombligo juntando los omóplatos.','Baja controlando.'],
+  f:[{hip:[100,132],torso:112,arms:[{a:2,b:2},{a:-2,b:-2}],legs:[{t:[122,200],k:1},{t:[112,200],k:1}]},
+     {hip:[100,132],torso:112,arms:[{a:-112,b:-8},{a:-115,b:-10}],legs:[{t:[122,200],k:1},{t:[112,200],k:1}]}]});
+ const BAN=o=>LY(Object.assign({hip:[124,160],neck:[74,159],legs:[{t:[156,200],k:1},{t:[150,200],k:1}]},o));
+ N('press_banca_barra',{n:'Press de banca con barra',u:'reps',w:'barra',props:['bench'],dur:1400,m:['pecho','brazo','hombro'],
+  c:['Acostado en el banco, pies firmes en el suelo.','Baja la barra hasta rozar el pecho.','Empuja hacia arriba sin despegar la espalda. Ideal con alguien que te asista.'],
+  f:[BAN({arms:[{a:95,b:180},{a:93,b:178}]}), BAN({arms:[{a:180,b:180},{a:178,b:178}]})]});
+ N('press_banca_mancuernas',{n:'Press de banca con mancuernas',u:'reps',w:true,props:['bench'],dur:1400,m:['pecho','brazo','hombro'],
+  c:['Acostado en el banco con una mancuerna en cada mano.','Baja hasta que los codos queden un poco bajo el banco.','Empuja hacia arriba juntando las mancuernas.'],
+  f:[BAN({arms:[{a:95,b:180},{a:93,b:178}]}), BAN({arms:[{a:180,b:180},{a:178,b:178}]})]});
+ N('press_militar_barra',{n:'Press militar con barra',u:'reps',w:'barra',dur:1300,m:['hombro','brazo'],
+  c:['De pie, barra a la altura de los hombros.','Empuja hacia arriba pasando cerca de la cara.','Aprieta abdomen y glúteos para no arquear la espalda.'],
+  f:[ST({arms:[{a:30,b:172},{a:26,b:170}]}), ST({arms:[{a:178,b:179},{a:175,b:177}]})]});
+ N('hip_thrust',{n:'Hip thrust con barra',u:'reps',w:'barra',props:['benchShort'],dur:1500,m:['gluteo','muslo'],
+  c:['Espalda alta apoyada en el banco y la barra sobre la cadera (con una toalla).','Sube la cadera hasta quedar en línea recta.','Aprieta glúteos arriba un segundo y baja lento.'],
+  f:[{hip:[116,190],neck:[70,166],arms:[{t:[116,182],k:-1},{t:[112,182],k:-1}],legs:[{t:[150,200],k:1},{t:[146,200],k:1}]},
+     {hip:[118,158],neck:[70,164],arms:[{t:[118,150],k:-1},{t:[114,150],k:-1}],legs:[{t:[150,200],k:1},{t:[146,200],k:1}]}]});
+ N('subida_banco',{n:'Subida al banco',u:'reps',side:1,props:['step'],dur:1500,m:['muslo','gluteo'],
+  c:['Pon un pie completo arriba del banco o escalón firme.','Sube empujando con esa pierna, sin impulsarte con la de abajo.','Baja controlando.'],
+  f:[ST({legs:[{t:[150,166],k:1},{t:[118,200],k:1}],arms:[{a:10,b:10},{a:-8,b:-8}]}), ST({hip:[140,96],legs:[{t:[150,166],k:1},{t:[146,166],k:1}]})]});
+ const SEN={hip:[100,162],torso:178,legs:[{a:88,b:0},{a:86,b:-2}]};
+ N('jalon_polea',{n:'Jalón al pecho en polea',u:'reps',props:['chairSeat','poleaAlta'],cable:[106,14],dur:1400,m:['espalda','brazo'],
+  c:['Sentado, toma la barra con las manos más abiertas que los hombros.','Tira hacia el pecho llevando los codos hacia abajo.','Sube controlando hasta estirar los brazos.'],
+  f:[Object.assign({arms:[{a:172,b:176},{a:168,b:174}]},SEN), Object.assign({arms:[{a:-25,b:172},{a:-28,b:170}]},SEN)]});
+ N('remo_polea',{n:'Remo en polea',u:'reps',props:['chairSeat','poleaDer'],cable:[200,150],dur:1300,m:['espalda','brazo'],
+  c:['Sentado con la espalda recta, brazos estirados hacia la polea.','Tira llevando los codos atrás y juntando los omóplatos.','Vuelve lento sin encorvarte.'],
+  f:[Object.assign({arms:[{a:92,b:90},{a:89,b:88}]},SEN), Object.assign({arms:[{a:-60,b:95},{a:-63,b:92}]},SEN)]});
+ N('press_pecho_polea',{n:'Press de pecho en polea',u:'reps',props:['poleaIzq'],cable:[30,112],dur:1300,m:['pecho','hombro','brazo'],
+  c:['De espaldas a la máquina, un pie adelante.','Empuja los mangos hacia adelante hasta estirar los brazos.','Vuelve lento, sin dejar que el peso te tire.'],
+  f:[ST({torso:172,legs:[{t:[140,200],k:1},{t:[104,200],k:1}],arms:[{a:-70,b:92},{a:-73,b:90}]}), ST({torso:172,legs:[{t:[140,200],k:1},{t:[104,200],k:1}],arms:[{a:88,b:90},{a:85,b:88}]})]});
+ N('dominadas',{n:'Dominadas',u:'reps',props:['pullbar'],dur:1700,m:['espalda','brazo'],
+  c:['Cuélgate con las manos un poco más abiertas que los hombros.','Sube hasta pasar la barbilla sobre la barra.','Baja lento. Si aún no puedes subir, salta y baja lo más lento posible.'],
+  f:[{hip:[118,140],torso:180,arms:[{t:[124,42],k:-1},{t:[118,42],k:-1}],legs:[{a:-10,b:-35},{a:-14,b:-40}]},
+     {hip:[118,110],torso:180,arms:[{t:[124,42],k:-1},{t:[118,42],k:-1}],legs:[{a:-10,b:-35},{a:-14,b:-40}]}]});
+ N('remo_banda',{n:'Remo con banda elástica',u:'reps',props:['puerta'],banda:[214,150],dur:1300,m:['espalda','brazo'],
+  c:['Engancha la banda en una puerta cerrada o un poste firme.','Tira llevando los codos atrás.','Vuelve lento, sin soltar la tensión.'],
+  f:[ST({torso:176,arms:[{a:88,b:88},{a:85,b:85}]}), ST({torso:176,arms:[{a:-55,b:92},{a:-58,b:90}]})]});
+ N('extension_triceps',{n:'Extensión de tríceps',u:'reps',w:'goblet',dur:1300,m:['brazo'],
+  c:['Sostén una mancuerna con las dos manos sobre la cabeza.','Baja la mancuerna detrás de la cabeza doblando solo los codos.','Estira los brazos de nuevo. Los codos apuntan al frente.'],
+  f:[ST({arms:[{a:172,b:-8},{a:168,b:-12}]}), ST({arms:[{a:174,b:178},{a:170,b:176}]})]});
+ N('curl_barra',{n:'Curl de bíceps con barra',u:'reps',w:'barra',dur:1200,m:['brazo'],
+  c:['De pie, barra con las palmas hacia arriba.','Sube la barra doblando solo los codos.','Baja lento, sin balancear el cuerpo.'],
+  f:[ST({}), ST({arms:[{a:4,b:160},{a:-2,b:155}]})]});
+ N('fondos_silla',{n:'Fondos en silla',u:'reps',props:['chairBack'],dur:1400,m:['brazo','pecho'],
+  c:['Manos en el borde de una silla firme, detrás tuyo.','Baja doblando los codos hacia atrás.','Sube empujando con las manos. Más fácil con las rodillas dobladas.'],
+  f:[{hip:[104,168],torso:178,arms:[{t:[96,168],k:1},{t:[92,168],k:1}],legs:[{t:[160,200],k:1},{t:[154,200],k:1}]},
+     {hip:[104,186],torso:178,arms:[{t:[96,168],k:1},{t:[92,168],k:1}],legs:[{t:[160,200],k:1},{t:[154,200],k:1}]}]});
+ N('superman',{n:'Superman',u:'reps',props:['mat'],dur:1500,m:['espalda','gluteo'],
+  c:['Boca abajo, brazos estirados hacia adelante.','Levanta brazos, pecho y piernas al mismo tiempo.','Sostén un segundo y baja lento.'],
+  f:[LY({arms:[{a:-88,b:-88},{a:-90,b:-90}]}), LY({neck:[72,182],arms:[{a:-100,b:-104},{a:-102,b:-106}],legs:[{t:[160,190],k:-1},{t:[156,190],k:-1}]})]});
+ EX.sentadilla_kb=Object.assign({},EX.sentadilla_goblet,{n:'Sentadilla con pesa rusa',w:'kb'});
+ EX.swing_kb=Object.assign({},EX.swing,{n:'Swing con pesa rusa',w:'kb'});
+ EX.cinta_caminar=Object.assign({},EX.caminar,{n:'Caminata en trotadora',props:['treadmill'],c:['Sube un poco la inclinación (2 a 6%).','Paso firme, sin agarrarte de las barandas.','Si te cuesta hablar, baja la velocidad.']});
+ EX.cinta_trotar=Object.assign({},EX.trotar,{n:'Trote en trotadora',props:['treadmill'],c:['Velocidad cómoda: debes poder decir frases cortas.','Pisa suave y mira al frente.','Para bajarte, primero baja la velocidad.']});
+ const bf=(sp)=>Array.from({length:8},(_,i)=>{const a=i/8*2*Math.PI,c=[124+14*Math.cos(a),176+14*Math.sin(a)],d=[124-14*Math.cos(a),176-14*Math.sin(a)];
+   return {hip:[110,sp?140:136],torso:sp?150:160,arms:[{t:[156,116],k:-1},{t:[152,116],k:-1}],legs:[{t:c,k:1,f:80},{t:d,k:1,f:80}]}});
+ EX.bici={n:'Bicicleta estática',u:'secs',props:['bike'],dur:120,hold:0,seq:[0,1,2,3,4,5,6,7],m:['muslo','pantorrilla'],f:bf(0),
+   c:['Ajusta el asiento a la altura de la cadera.','Pedalea a un ritmo cómodo y constante.','Espalda recta, hombros relajados.']};
+ EX.bici_fuerte=Object.assign({},EX.bici,{n:'Bicicleta: tramo fuerte',dur:75,f:bf(1),c:['Sube la resistencia o la velocidad.','Debe costarte hablar.','Mantén el ritmo hasta que termine el tramo.']});
+})();
 /* =========================================================
    PLAN DE 1 AÑO (52 semanas, 5 fases)
    ========================================================= */
 const PHASES=[
  {n:'Base',from:1,to:4,sets:3,reps:10,rest:60,plank:20,cw:30,cr:30,rounds:3,desc:'Aprender la técnica y crear el hábito. Exigente pero cómodo: termina cada serie sintiendo que podrías hacer 3 repeticiones más.'},
- {n:'Construcción',from:5,to:12,sets:4,reps:12,rest:50,plank:30,cw:40,cr:20,rounds:4,desc:'Más volumen y menos descanso. Aparecen la sentadilla goblet y el press de pecho.'},
+ {n:'Construcción',from:5,to:12,sets:4,reps:12,rest:50,plank:30,cw:40,cr:20,rounds:4,desc:'Más volumen y menos descanso.'},
  {n:'Intensidad',from:13,to:24,sets:4,reps:12,rest:45,plank:40,cw:40,cr:20,rounds:5,desc:'Ejercicios combinados y primeros intervalos de trote.'},
  {n:'Rendimiento',from:25,to:36,sets:4,reps:15,rest:40,plank:45,cw:45,cr:15,rounds:5,desc:'Más repeticiones y bloques de trote de 3 minutos.'},
  {n:'Consolidación',from:37,to:52,sets:5,reps:12,rest:40,plank:50,cw:45,cr:15,rounds:6,desc:'Mantener todo lo ganado: trote largo y circuitos completos.'},
@@ -499,46 +588,49 @@ const COOLDOWN=[['caminar',90]];
 function phaseIdx(week){ const o=S.settings.phaseOverride; if(o!=null&&o!=='') return +o; const w=Math.min(52,week+PHASES[S.settings.faseIni||0].from-1); return Math.max(0,PHASES.findIndex(p=>w>=p.from&&w<=p.to)); }
 function wk(){ const d=daysBetween(S.profile.start,todayStr()); return Math.min(52,Math.max(1,Math.floor(d/7)+1)); }
 
+const EQ={mancuernas:['💪','Mancuernas'],barra:['🏋️','Barra con discos'],banco:['🪑','Banco'],maquina:['⚙️','Máquina con poleas'],dominadas:['🧗','Barra de dominadas'],kb:['🔔','Pesa rusa'],bandas:['🎗️','Bandas elásticas'],trotadora:['🏃','Trotadora'],bici:['🚴','Bicicleta estática']};
+function eqs(){return (S&&S.profile&&S.profile.equipo)||['mancuernas']}
+const tiene=q=>eqs().includes(q);
+// [ejercicio, implementos que necesita, nivel: 1 solo exigente / -1 solo normal]
+const POOL={
+ rodilla:[['sentadilla_silla',[],-1],['sentadilla_goblet',['mancuernas']],['sentadilla_kb',['kb']],['sentadilla_press',['mancuernas'],1],['sentadilla_barra',['barra']]],
+ empuje:[['flexion_meson',[],-1],['flexion_suelo',[],1],['press_pecho_suelo',['mancuernas']],['press_banca_mancuernas',['mancuernas','banco']],['press_banca_barra',['barra','banco']],['press_pecho_polea',['maquina']]],
+ unilateral:[['zancada_atras',[]],['zancada_peso',['mancuernas'],1],['bulgara',[],1],['subida_banco',['banco']]],
+ hombro:[['press_hombros',['mancuernas']],['press_militar_barra',['barra']],['elevacion_frontal',['mancuernas'],-1]],
+ gluteo:[['puente_gluteo',[]],['hip_thrust',['barra','banco']],['swing',['mancuernas'],1],['swing_kb',['kb']]],
+ core:[['plancha_meson',[],-1],['plancha_suelo',[],1],['bicho_muerto',[]]],
+ bisagra:[['peso_muerto',['mancuernas']],['peso_muerto_barra',['barra']],['swing_kb',['kb']],['puente_gluteo',[]]],
+ tiron_h:[['superman',[]],['remo',['mancuernas']],['remo_dos',['mancuernas'],1],['remo_barra',['barra']],['remo_polea',['maquina']],['remo_banda',['bandas']]],
+ tiron_v:[['jalon_polea',['maquina']],['dominadas',['dominadas']]],
+ brazo:[['fondos_silla',[]],['curl',['mancuernas']],['extension_triceps',['mancuernas']],['curl_barra',['barra']]],
+ cardio:[['marcha',[]],['boxeo',[]],['rodilla_codo',[]],['escaladores_meson',[],-1],['escaladores_suelo',[],1],['burpee',[],1],['sentadilla_silla',[],-1],['sentadilla_press',['mancuernas']],['swing',['mancuernas']],['swing_kb',['kb']],['zancada_atras',[]],['subida_banco',['banco']]]
+};
+const REQ={};Object.values(POOL).forEach(L=>L.forEach(([k,r])=>{if(!REQ[k])REQ[k]=r}));Object.assign(REQ,{cinta_caminar:['trotadora'],cinta_trotar:['trotadora'],bici:['bici'],bici_fuerte:['bici']});
+const disponible=k=>(REQ[k]||[]).every(tiene);
+function opciones(slot){const X=level()==='exigente';return POOL[slot].filter(([k,r,lv])=>r.every(tiene)&&!(lv===1&&!X)&&!(lv===-1&&X)).map(x=>x[0])}
+// prefiere lo que usa implementos (si los hay) y rota cada 2 semanas para que no sea monótono
+function elige(slot,week,salt,usados){let L=opciones(slot).filter(k=>!usados.has(k));if(!L.length)return null;
+  const conEq=L.filter(k=>(REQ[k]||[]).length);if(conEq.length&&L.length>2)L=conEq.concat(L.filter(k=>!conEq.includes(k)).slice(0,1));
+  const blk=Math.floor((Math.max(1,week)-1)/2);return L[(blk+salt)%L.length]}
 function workout0(id,pi,week){
-  if(level()==='exigente') return workoutX(id,pi);
-  const P=PHASES[pi];
-  const str=(list)=>({type:'sets',items:list.map(e=>{const x=EX[e[0]];return {ex:e[0],sets:e[2]||P.sets,reps:x.u==='secs'?0:(e[1]||P.reps),secs:x.u==='secs'?(e[1]||P.plank):0,rest:P.rest};})});
-  if(id==='A'){
-    const L=[ [['sentadilla_silla'],['flexion_meson'],['remo'],['puente_gluteo'],['plancha_meson']],
-              [['sentadilla_goblet'],['flexion_meson'],['remo'],['puente_gluteo'],['plancha_meson']],
-              [['sentadilla_goblet'],['zancada_atras'],['flexion_meson'],['remo'],['puente_gluteo'],['plancha_meson']],
-              [['sentadilla_press'],['zancada_atras'],['flexion_meson'],['remo'],['puente_gluteo'],['plancha_meson']],
-              [['sentadilla_press'],['zancada_atras'],['flexion_meson'],['remo'],['puente_gluteo'],['plancha_meson']] ][pi];
-    return Object.assign({id,n:'Fuerza A · Piernas y empuje'},str(L));
-  }
-  if(id==='B'){
-    const L=[ [['peso_muerto'],['press_hombros'],['zancada_atras',8,2],['curl'],['bicho_muerto',8]],
-              [['peso_muerto'],['press_hombros'],['zancada_atras',10,3],['press_pecho_suelo'],['curl'],['bicho_muerto',10]],
-              [['peso_muerto'],['press_hombros'],['press_pecho_suelo'],['elevacion_frontal'],['curl'],['bicho_muerto',10]],
-              [['peso_muerto'],['press_hombros'],['press_pecho_suelo'],['elevacion_frontal'],['curl'],['bicho_muerto',12]],
-              [['peso_muerto'],['press_hombros'],['press_pecho_suelo'],['elevacion_frontal'],['curl'],['bicho_muerto',12]] ][pi];
-    return Object.assign({id,n:'Fuerza B · Espalda, hombros y core'},str(L));
-  }
-  if(id==='C'){
-    const L=[ ['marcha','boxeo','rodilla_codo','sentadilla_silla'],
-              ['marcha','boxeo','escaladores_meson','rodilla_codo','sentadilla_silla'],
-              ['boxeo','escaladores_meson','sentadilla_press','rodilla_codo','marcha'],
-              ['boxeo','escaladores_meson','sentadilla_press','rodilla_codo','zancada_atras','marcha'],
-              ['boxeo','escaladores_meson','sentadilla_press','rodilla_codo','zancada_atras','marcha'] ][pi];
-    return {id,n:'Cardio en casa · Circuito',type:'circuit',items:L.map(e=>({ex:e})),work:P.cw,rest:P.cr,rounds:P.rounds,roundRest:75};
-  }
-  if(id==='W'){
-    let seg;
-    if(pi===0) seg=[['caminar',1200,'Caminata a paso firme']];
-    else if(pi===1) seg=[['caminar',1800,'Caminata a paso firme']];
-    else {
-      const [tr,ca,n]= pi===2?[60,120,6]: pi===3?[180,60,5]:[480,60,3];
-      seg=[['caminar',300,'Caminata de calentamiento']];
-      for(let i=0;i<n;i++){ seg.push(['trotar',tr,`Trote ${i+1} de ${n}`]); if(i<n-1) seg.push(['caminar',ca,'Camina y recupera']); }
-      seg.push(['caminar',300,'Caminata para enfriar']);
-    }
-    return {id,n: pi<2?'Caminata':'Caminata + trote',type:'intervals',items:seg.map(s=>({ex:s[0],secs:s[1],label:s[2]}))};
-  }
+  const X=level()==='exigente',P=X?Object.assign({},PHASES[pi],PHX[pi]):PHASES[pi];
+  const mk=(slots,salt)=>{const us=new Set(),items=[];slots.forEach((sl,i)=>{const e=elige(sl,week,salt+i,us);if(!e)return;us.add(e);const x=EX[e];
+    items.push({ex:e,sets:P.sets,reps:x.u==='secs'?0:(e==='bicho_muerto'||e==='dominadas'?Math.min(P.reps,e==='dominadas'?6:10):P.reps),secs:x.u==='secs'?P.plank:0,rest:P.rest})});return{type:'sets',items}};
+  if(id==='A')return Object.assign({id,n:'Fuerza A · Piernas y empuje'},mk(['rodilla','empuje','unilateral','gluteo',...(X||pi>=2?['hombro']:[]),'core'],0));
+  if(id==='B')return Object.assign({id,n:'Fuerza B · Espalda, hombros y brazos'},mk(['bisagra','tiron_h','tiron_v','hombro','brazo','core'],4));
+  if(id==='C'){const L=opciones('cardio'),n=Math.min(L.length,[4,5,5,6,6][pi]),blk=Math.floor((Math.max(1,week)-1)/2),items=[];
+    for(let i=0;i<n;i++)items.push({ex:L[(blk*3+i)%L.length]});
+    return {id,n:'Cardio en casa · Circuito',type:'circuit',items,work:P.cw,rest:P.cr,rounds:P.rounds,roundRest:X?60:75}}
+  if(id==='W'){let seg;
+    if(X){ if(pi===0) seg=[['caminar',1800,'Caminata rápida']];
+      else{const [tr,ca,n]=[[60,120,8],[120,60,8],[240,60,5],[480,60,3]][pi-1];seg=[['caminar',300,'Caminata de calentamiento']];for(let i=0;i<n;i++){seg.push(['trotar',tr,`Trote ${i+1} de ${n}`]);if(i<n-1)seg.push(['caminar',ca,'Camina y recupera'])}seg.push(['caminar',300,'Caminata para enfriar'])}}
+    else{ if(pi===0) seg=[['caminar',1200,'Caminata a paso firme']]; else if(pi===1) seg=[['caminar',1800,'Caminata a paso firme']];
+      else{const [tr,ca,n]=pi===2?[60,120,6]:pi===3?[180,60,5]:[480,60,3];seg=[['caminar',300,'Caminata de calentamiento']];for(let i=0;i<n;i++){seg.push(['trotar',tr,`Trote ${i+1} de ${n}`]);if(i<n-1)seg.push(['caminar',ca,'Camina y recupera'])}seg.push(['caminar',300,'Caminata para enfriar'])}}
+    const hayT=tiene('trotadora'),hayB=tiene('bici');let maq=null;
+    if(hayT&&hayB)maq=(sinImp()||Math.floor((Math.max(1,week)-1))%2)?'bici':'trotadora';else if(hayB)maq='bici';else if(hayT)maq='trotadora';
+    if(maq==='trotadora')return {id,n:seg.some(s=>s[0]==='trotar')?'Trotadora · intervalos':'Trotadora · caminata inclinada',type:'intervals',items:seg.map(s=>({ex:s[0]==='trotar'?'cinta_trotar':'cinta_caminar',secs:s[1],label:s[2].replace('Caminata','Caminata en trotadora')}))};
+    if(maq==='bici'){let n=0;const tot=seg.filter(s=>s[0]==='trotar').length;return {id,n:tot?'Bicicleta · intervalos':'Bicicleta estática',type:'intervals',items:seg.map(s=>s[0]==='trotar'?{ex:'bici_fuerte',secs:s[1],label:`Pedaleo fuerte ${++n} de ${tot}`}:{ex:'bici',secs:s[1],label:s[2].replace(/Caminata( rápida| a paso firme)?/,'Pedaleo').replace('Camina y recupera','Pedalea suave y recupera')})}}
+    return {id,n:seg.some(s=>s[0]==='trotar')?'Caminata + trote':'Caminata',type:'intervals',items:seg.map(s=>({ex:s[0],secs:s[1],label:s[2]}))}}
   if(id==='L') return {id,n:'Caminata suave (opcional)',type:'intervals',items:[{ex:'caminar',secs:1200,label:'Caminata suave'}]};
   return null;
 }
@@ -548,7 +640,7 @@ function workout0(id,pi,week){
    ========================================================= */
 const ACT={sed:'Casi no hago ejercicio',algo:'Me muevo algo (camino, a veces entreno)',act:'Entreno seguido'};
 const SEQ=['A','C','B','W','X','W'];
-const TIPO_N={A:'Fuerza A',B:'Fuerza B',C:'Cardio en casa',W:'Caminata'};
+const TIPO_N={A:'Fuerza A',B:'Fuerza B',C:'Cardio en casa',W:'Cardio largo'};
 const DIAS_N=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
 const pareja=()=>!!(S&&S.settings&&S.settings.modo==='pareja');
 const compaN=()=>(S&&S.settings&&S.settings.compa)||'tu compañero(a)';
@@ -566,13 +658,13 @@ function calcPlan(p){
   const sinImpacto=!!(p.rodillas||i>=35||p.edad>=60);
   return{imc:Math.round(i*10)/10,ritmo,deficit,semanas,lvl,fase,sinImpacto}}
 function sanoDe(h){const m=(h/100)**2;return[Math.ceil(18.5*m),Math.floor(24.9*m)]}
-const SWAP={zancada_atras:'puente_gluteo',zancada_peso:'sentadilla_silla',bulgara:'sentadilla_silla',burpee:'boxeo',escaladores_suelo:'escaladores_meson',swing:'peso_muerto',trotar:'caminar'};
+const SWAP={cinta_trotar:'cinta_caminar',zancada_atras:'puente_gluteo',zancada_peso:'sentadilla_silla',bulgara:'sentadilla_silla',burpee:'boxeo',escaladores_suelo:'escaladores_meson',swing:'peso_muerto',trotar:'caminar'};
 function sinImp(){return !!(S&&S.plan&&S.plan.sinImpacto)}
 function suavizar(w){
   if(!w||!sinImp())return w;w=JSON.parse(JSON.stringify(w));
-  if(w.type==='intervals'){let n=0;const tot=w.items.filter(x=>x.ex==='trotar').length;
-    w.items=w.items.map(x=>x.ex==='trotar'?{ex:'caminar',secs:x.secs,label:'Caminata rápida '+(++n)+' de '+tot}:(x.label==='Camina y recupera'?Object.assign({},x,{label:'Camina más lento'}):x));
-    if(tot)w.n='Caminata con cambios de ritmo';return w}
+  if(w.type==='intervals'){let n=0;const tot=w.items.filter(x=>x.ex==='trotar'||x.ex==='cinta_trotar').length;
+    w.items=w.items.map(x=>(x.ex==='trotar'||x.ex==='cinta_trotar')?{ex:x.ex==='trotar'?'caminar':'cinta_caminar',secs:x.secs,label:'Caminata rápida '+(++n)+' de '+tot}:(x.label==='Camina y recupera'?Object.assign({},x,{label:'Camina más lento'}):x));
+    if(tot)w.n=w.items.some(x=>x.ex==='cinta_caminar')?'Trotadora · caminata con cambios de ritmo':'Caminata con cambios de ritmo';return w}
   const vistos=new Set();w.items=w.items.map(x=>Object.assign({},x,{ex:SWAP[x.ex]||x.ex})).filter(x=>{if(vistos.has(x.ex))return false;vistos.add(x.ex);return true});return w}
 function workout(id,pi,week){return suavizar(workout0(id,pi,week))}
 function scheduleFor(pi,week){const d=(S&&S.plan&&S.plan.dias)||[0,2,4],out=[null,null,null,null,null,null,null];
@@ -588,8 +680,8 @@ function verPlan(){const p=S.plan||{},pr=S.profile,M=metas(todayStr()),[a,b]=san
   <div class="pl">
    ${it('⚖️','Tu punto de partida',`IMC ${i.toFixed(1).replace('.',',')} (${imcCat(i)}). Para tu estatura, un peso saludable va de <b>${a} a ${b} kg</b>.`)}
    ${it('🎯','Tu meta',p.ritmo?`Bajar de ${kg(pr.startWeight)} a ${kg(pr.goal)} a un ritmo sano de <b>${String(p.ritmo).replace('.',',')} kg por semana</b>. Llegarías cerca de <b>${fechaMeta()}</b> (unas ${p.semanas} semanas).`:`Mantener tu peso y ponerte en forma.`)}
-   ${it('🍽️','Tu alimentación',`Unas <b>${M.meta.toLocaleString('es-CL')} kcal</b> hoy${p.deficit?` (${p.deficit} menos de lo que gastas)`:''}, <b>${protDia()} g de proteína</b> y <b>${M.agua.toLocaleString('es-CL')} L de agua</b>. El menú de la pestaña Comida ya viene con tus porciones.`)}
-   ${it('🏋️','Tu entrenamiento',`${(p.dias||[]).length} días por semana: ${horarioTxt()}. Nivel <b>${S.settings.level==='exigente'?'exigente':'normal'}</b>, partiendo en la fase <b>${PHASES[S.settings.faseIni||0].n}</b>.${sinImp()?' <b>Sin saltos ni trote</b>, para cuidar tus articulaciones.':''}`)}
+   ${it('🍽️','Tu alimentación',`Unas <b>${M.meta.toLocaleString('es-CL')} kcal</b> hoy${p.deficit?` (${p.deficit} menos de lo que gastas)`:''}, <b>${protDia()} g de proteína</b> y <b>${M.agua.toLocaleString('es-CL')} L de agua</b>. Menú <b>${{barata:'barato',normal:'normal',cara:'más caro'}[S.profile.presu||'barata']}</b>, con tus porciones ya calculadas.`)}
+   ${it('🏋️','Tu entrenamiento',`${(p.dias||[]).length} días por semana: ${horarioTxt()}. Con ${eqs().length?eqs().map(k=>EQ[k][1].toLowerCase()).join(', '):'tu propio cuerpo'}. Los ejercicios cambian cada 2 semanas. Nivel <b>${S.settings.level==='exigente'?'exigente':'normal'}</b>, partiendo en la fase <b>${PHASES[S.settings.faseIni||0].n}</b>.${sinImp()?' <b>Sin saltos ni trote</b>, para cuidar tus articulaciones.':''}`)}
    ${pareja()?it('👯','De a dos',`Entrenas con <b>${esc(compaN())}</b>. Si también instala la app y elige los mismos días, les toca lo mismo. En Comida aparece la porción de cada uno.`):''}
   </div>
   <button class="btn" id="plOk" style="margin-top:14px">¡Vamos!</button>`);$('#plOk').onclick=closeModal}
@@ -602,6 +694,10 @@ function perfilHTML(d){const dias=d.dias||[0,2,4],md=d.modo||'solo',sx=(id,v)=>`
   <label>¿Cómo te mueves hoy?</label><select id="o_act">${Object.entries(ACT).map(([k,v])=>`<option value="${k}" ${k===(d.act||'sed')?'selected':''}>${v}</option>`).join('')}</select>
   <label>¿Qué días puedes entrenar?</label><div class="dsel" id="o_d">${['L','M','M','J','V','S','D'].map((n,i)=>`<button data-i="${i}" class="${dias.includes(i)?'on':''}">${n}</button>`).join('')}</div><div class="small mut" id="o_dn" style="margin-top:6px"></div>
   <label class="chk"><input type="checkbox" id="o_rod" ${d.rodillas?'checked':''}> Cuidar rodillas y articulaciones (sin saltos ni trote)</label>
+  <label>¿Qué tienes para entrenar en casa?</label><div class="eqs" id="o_eq">${Object.entries(EQ).map(([k,[e,n]])=>`<button data-k="${k}" class="${(d.equipo||[]).includes(k)?'on':''}"><span>${e}</span>${n}</button>`).join('')}</div>
+  <div class="small mut" style="margin-top:6px">Marca todo lo que tengas (cualquier peso sirve). Si no tienes nada, igual funciona: entrenas con tu propio cuerpo.</div>
+  <label>¿Cómo quieres tu comida?</label><div class="seg" id="o_pr">${[['barata','💸 Barata'],['normal','🍽️ Normal'],['cara','✨ Cara']].map(([k,n])=>`<button data-v="${k}" class="${(d.presu||'barata')===k?'on':''}">${n}</button>`).join('')}</div>
+  <div class="small mut" style="margin-top:6px">Barata: legumbres, huevos, pollo y feria. Cara: salmón, carnes, frutos secos, berries…</div>
   <label>¿Cómo vas a entrenar?</label><div class="seg" id="o_m"><button data-v="solo" class="${md==='solo'?'on':''}">🙋 Solo</button><button data-v="pareja" class="${md==='pareja'?'on':''}">👯 De a dos</button></div>
   <div id="o_cp" class="${md==='pareja'?'':'hide'}"><p class="small mut" style="margin:10px 0 0">Con los datos de tu compañero(a), la app calcula su porción de comida. Si también instala la app y elige los mismos días, les toca el mismo entrenamiento.</p>
    <label>Nombre de tu compañero(a)</label><input id="c_n" value="${esc(d.cN||'')}">
@@ -609,14 +705,15 @@ function perfilHTML(d){const dias=d.dias||[0,2,4],md=d.modo||'solo',sx=(id,v)=>`
    <div class="grid3c"><div><label>Edad</label><input id="c_a" inputmode="numeric" value="${d.cA||''}"></div><div><label>Estatura</label><input id="c_h" inputmode="decimal" value="${d.cH||''}" placeholder="cm"></div><div><label>Peso</label><input id="c_w" inputmode="decimal" value="${d.cW||''}" placeholder="kg"></div></div>
    <label>Su peso meta (opcional)</label><input id="c_g" inputmode="decimal" value="${d.cG||''}" placeholder="kg"></div>`}
 function bindPerfil(){
-  ['o_sx','c_sx','o_m'].forEach(id=>document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b));if(id==='o_m')$('#o_cp').classList.toggle('hide',b.dataset.v!=='pareja')}));
+  document.querySelectorAll('#o_eq button').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+  ['o_sx','c_sx','o_m','o_pr'].forEach(id=>document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b));if(id==='o_m')$('#o_cp').classList.toggle('hide',b.dataset.v!=='pareja')}));
   const dn=()=>{const on=[...document.querySelectorAll('#o_d button.on')];$('#o_dn').textContent=on.length+' días: '+on.map((_,i)=>{const t=SEQ[i];return t==='X'?'Fuerza A o B':TIPO_N[t]}).join(', ')};
   document.querySelectorAll('#o_d button').forEach(b=>b.onclick=()=>{const n=document.querySelectorAll('#o_d button.on').length;if(b.classList.contains('on')&&n<=2)return alert('Elige al menos 2 días.');if(!b.classList.contains('on')&&n>=6)return alert('Deja al menos un día de descanso.');b.classList.toggle('on');dn()});dn();
   const hint=()=>{const h=num($('#o_h').value),w=num($('#o_w').value);if(h>=120&&h<=230){const[a,b]=sanoDe(h);$('#o_hint').innerHTML='Para tu estatura, un peso saludable va de <b>'+a+' a '+b+' kg</b>.'+(w>b?' Una buena primera meta: <b>'+Math.max(b,Math.round(w*.9))+' kg</b>.':'')}else $('#o_hint').textContent=''};
   $('#o_h').oninput=hint;$('#o_w').oninput=hint;hint()}
 function leerPerfil(){const g=id=>$('#'+id),sv=id=>(document.querySelector('#'+id+' button.on')||{}).dataset.v;
   const d={name:g('o_n').value.trim(),sexo:sv('o_sx')||'h',age:num(g('o_a').value),height:num(g('o_h').value),peso:num(g('o_w').value),goal:num(g('o_g').value),act:g('o_act').value,
-    dias:[...document.querySelectorAll('#o_d button.on')].map(b=>+b.dataset.i),rodillas:g('o_rod').checked,modo:sv('o_m')||'solo',
+    dias:[...document.querySelectorAll('#o_d button.on')].map(b=>+b.dataset.i),rodillas:g('o_rod').checked,equipo:[...document.querySelectorAll('#o_eq button.on')].map(b=>b.dataset.k),presu:sv('o_pr')||'barata',modo:sv('o_m')||'solo',
     cN:g('c_n').value.trim(),cSx:sv('c_sx')||'h',cA:num(g('c_a').value)||'',cH:num(g('c_h').value)||'',cW:num(g('c_w').value)||'',cG:num(g('c_g').value)||''};
   if(!d.name){alert('Escribe tu nombre.');return null}
   if(!(d.age>=14&&d.age<=90)){alert('Revisa tu edad.');return null}
@@ -632,11 +729,11 @@ function aplicarPerfil(d,inicio){
   if(!S)S={profile:{startWeight:d.peso,start:inicio},weights:[{d:inicio,w:d.peso,waist:null,note:'Inicio'}],sessions:[],settings:{sound:true,phaseOverride:null}};
   else if(Math.abs(d.peso-curW())>=0.05){S.weights=S.weights.filter(x=>x.d!==todayStr());S.weights.push({d:todayStr(),w:d.peso,waist:null,note:''})}
   if(d.goal>=S.profile.startWeight)S.profile.startWeight=Math.max(S.profile.startWeight,d.peso);
-  Object.assign(S.profile,{name:d.name,sexo:d.sexo,height:d.height,age:d.age,goal:d.goal,act:d.act,rodillas:d.rodillas});
+  Object.assign(S.profile,{name:d.name,sexo:d.sexo,height:d.height,age:d.age,goal:d.goal,act:d.act,rodillas:d.rodillas,equipo:d.equipo,presu:d.presu});
   S.plan=Object.assign(pl,{dias:d.dias});S.settings.level=pl.lvl;S.settings.faseIni=pl.fase;
   Object.assign(S.settings,{modo:d.modo,compa:d.cN,cSexo:d.cSx,cEdad:d.cA,cAltura:d.cH,cPeso:d.cW,cMeta:d.cG});
   const f=FS();f.sexo=d.sexo;f.edad=d.age;save()}
-function perfilActual(){const p=S.profile,st=S.settings;return{name:p.name,sexo:p.sexo,age:p.age,height:p.height,peso:curW(),goal:p.goal,act:p.act,dias:(S.plan||{}).dias,rodillas:p.rodillas,modo:st.modo,cN:st.compa,cSx:st.cSexo,cA:st.cEdad,cH:st.cAltura,cW:st.cPeso,cG:st.cMeta}}
+function perfilActual(){const p=S.profile,st=S.settings;return{name:p.name,sexo:p.sexo,age:p.age,height:p.height,peso:curW(),goal:p.goal,act:p.act,dias:(S.plan||{}).dias,rodillas:p.rodillas,equipo:eqs(),presu:p.presu||'barata',modo:st.modo,cN:st.compa,cSx:st.cSexo,cA:st.cEdad,cH:st.cAltura,cW:st.cPeso,cG:st.cMeta}}
 function editarPerfil(){openModal(`<h2 style="margin-top:0">Mis datos</h2><p class="small mut" style="margin-top:-4px">Al guardar se recalcula tu plan de ejercicio y de comida.</p>${perfilHTML(perfilActual())}<button class="btn" id="ep_ok" style="margin-top:16px">Guardar y recalcular</button><button class="btn w" id="ep_x" style="margin-top:8px">Cancelar</button>`);
   bindPerfil();$('#ep_x').onclick=closeModal;$('#ep_ok').onclick=()=>{const d=leerPerfil();if(!d)return;aplicarPerfil(d);closeModal();render();verPlan()}}
 
@@ -719,6 +816,14 @@ const CFG_APP={archivo:'mi-progreso-respaldo',sexo:'h',deficit:500,compa:'Compa�
    ========================================================= */
 const FOOD={
  des:[
+  {n:"Tostadas con huevo, palta y naranja",q:"2 rebanadas de pan, 2 huevos, ¼ de palta y 1 naranja",k:450,i:["Pan integral", "Huevos", "Palta", "Naranjas"],e:"🍳",p:2},
+  {n:"Yogur griego con granola y frutillas",q:"1 yogur griego, 4 cucharadas de granola y 1 taza de frutillas",k:380,i:["Yogur griego", "Granola", "Frutillas"],e:"🍓",p:2},
+  {n:"Panqueques de avena y plátano",q:"½ taza de avena, 1 plátano, 2 huevos y 1 cucharada de miel",k:430,i:["Avena", "Plátano", "Huevos", "Miel"],e:"🥞",p:2},
+  {n:"Sándwich de pavo y queso",q:"2 rebanadas de pan, 2 láminas de jamón de pavo, 1 lámina de queso y 1 naranja",k:420,i:["Pan integral", "Jamón de pavo", "Queso", "Naranjas"],e:"🥪",p:2},
+  {n:"Bowl de yogur griego con berries y nueces",q:"1 yogur griego, 1 taza de berries y 20 g de nueces",k:400,i:["Yogur griego", "Berries", "Nueces"],e:"🫐",p:3},
+  {n:"Tostadas de palta con huevo y salmón ahumado",q:"2 rebanadas de pan de masa madre, ½ palta, 1 huevo y 50 g de salmón ahumado",k:480,i:["Pan de masa madre", "Palta", "Huevos", "Salmón ahumado"],e:"🥑",p:3},
+  {n:"Batido de proteína con plátano",q:"1 taza de leche de almendras, 1 plátano, 1 cucharada de mantequilla de maní y 30 g de proteína en polvo",k:420,i:["Leche de almendras", "Plátano", "Mantequilla de maní", "Proteína en polvo"],e:"🥤",p:3},
+  {n:"Omelette de champiñones y queso de cabra",q:"3 huevos, 1 taza de champiñones y 30 g de queso de cabra",k:390,i:["Huevos", "Champiñones", "Queso de cabra"],e:"🍄",p:3},
   {n:'Avena con plátano y leche',q:'½ taza de avena, 1 plátano y 1 taza de leche',k:380,i:['Avena','Plátano','Leche'],e:'🥣'},
   {n:'Pan integral con huevo revuelto y tomate',q:'1 pan integral, 2 huevos y ½ tomate',k:390,i:['Pan integral','Huevos','Tomate'],e:'🍳'},
   {n:'Pan con palta y té',q:'1 pan integral, ¼ de palta y té',k:360,i:['Pan integral','Palta','Té'],e:'🥑'},
@@ -730,6 +835,17 @@ const FOOD={
   {n:'Batido de leche, avena y plátano',q:'1 taza de leche, 3 cucharadas de avena y 1 plátano',k:390,i:['Leche','Avena','Plátano'],e:'🥤'},
   {n:'Tostadas con mantequilla de maní y plátano',q:'2 rebanadas de pan, 1 cucharada de mantequilla de maní y ½ plátano',k:420,i:['Pan integral','Mantequilla de maní','Plátano'],e:'🍞'}],
  alm:[
+  {n:"Pollo al horno con arroz y ensalada",q:"150 g de pechuga de pollo, ¾ taza de arroz y ensalada a gusto",k:560,i:["Pechuga de pollo", "Arroz", "Lechuga", "Tomate"],e:"🍗",p:2},
+  {n:"Carne a la plancha con puré",q:"150 g de posta, 1 taza de puré de papas y ensalada a gusto",k:600,i:["Posta (carne)", "Papas", "Leche", "Lechuga"],e:"🥩",p:2},
+  {n:"Pastel de choclo",q:"1 plato de pastel de choclo y ensalada a gusto",k:620,i:["Choclo", "Carne molida", "Pollo", "Cebolla"],e:"🌽",p:2},
+  {n:"Tallarines con salsa boloñesa",q:"1½ taza de tallarines y ½ taza de salsa boloñesa",k:600,i:["Tallarines", "Carne molida", "Salsa de tomate", "Cebolla"],e:"🍝",p:2},
+  {n:"Merluza al horno con papas",q:"150 g de merluza, 2 papas y ensalada a gusto",k:480,i:["Merluza", "Papas", "Limón", "Lechuga"],e:"🐟",p:2},
+  {n:"Cazuela de vacuno",q:"1 plato hondo con 1 presa de vacuno",k:520,i:["Carne de vacuno", "Zapallo", "Papas", "Choclo"],e:"🍲",p:2},
+  {n:"Salmón a la plancha con quínoa y espárragos",q:"150 g de salmón, ¾ taza de quínoa y 1 taza de espárragos",k:620,i:["Salmón", "Quínoa", "Espárragos"],e:"🐟",p:3},
+  {n:"Lomo vetado con papas al horno",q:"150 g de lomo vetado, 2 papas y ensalada a gusto",k:650,i:["Lomo vetado", "Papas", "Lechuga"],e:"🥩",p:3},
+  {n:"Poke de atún fresco",q:"120 g de atún fresco, ¾ taza de arroz, ¼ de palta y pepino a gusto",k:580,i:["Atún fresco", "Arroz", "Palta", "Pepino"],e:"🍣",p:3},
+  {n:"Pavo con camote y brócoli",q:"150 g de pechuga de pavo, 150 g de camote y 1 taza de brócoli",k:540,i:["Pechuga de pavo", "Camote", "Brócoli"],e:"🦃",p:3},
+  {n:"Reineta al horno con verduras salteadas",q:"160 g de reineta y 1½ taza de verduras salteadas",k:450,i:["Reineta", "Zapallo italiano", "Pimentón", "Champiñones"],e:"🐠",p:3},
   {n:'Lentejas con arroz y ensalada',q:'1½ taza de lentejas, ½ taza de arroz y ensalada a gusto',k:620,i:['Lentejas','Arroz','Zanahoria','Lechuga'],e:'🍲'},
   {n:'Porotos con riendas y zapallo',q:'1 plato (1½ taza) con fideos y zapallo',k:640,i:['Porotos','Fideos','Zapallo','Cebolla'],e:'🍲'},
   {n:'Garbanzos guisados con verduras',q:'1½ taza de garbanzos con verduras',k:600,i:['Garbanzos','Zanahoria','Cebolla','Pimentón'],e:'🥘'},
@@ -745,6 +861,12 @@ const FOOD={
   {n:'Ensalada de atún con papas y huevo',q:'½ lata de atún, 2 papas y 1 huevo',k:550,i:['Atún en lata','Papas','Huevos','Lechuga'],e:'🥗'},
   {n:'Guiso de porotos verdes con arroz',q:'1½ taza de guiso y ½ taza de arroz',k:530,i:['Porotos verdes','Papas','Cebolla','Arroz'],e:'🫛'}],
  once:[
+  {n:"Pan con queso fresco y tomate",q:"1 pan, 2 láminas de queso fresco y ½ tomate",k:330,i:["Pan", "Queso fresco", "Tomate"],e:"🧀",p:2},
+  {n:"Tostadas con palta y pavo",q:"2 rebanadas de pan, ¼ de palta y 2 láminas de jamón de pavo",k:360,i:["Pan integral", "Palta", "Jamón de pavo"],e:"🥑",p:2},
+  {n:"Yogur griego con fruta y miel",q:"1 yogur griego, 1 taza de fruta y 1 cucharada de miel",k:300,i:["Yogur griego", "Fruta de la estación", "Miel"],e:"🍯",p:2},
+  {n:"Tostadas de masa madre con palta y huevo",q:"2 rebanadas de pan de masa madre, ¼ de palta y 1 huevo",k:390,i:["Pan de masa madre", "Palta", "Huevos"],e:"🍞",p:3},
+  {n:"Yogur griego con granola y miel",q:"1 yogur griego, 4 cucharadas de granola y 1 cucharada de miel",k:360,i:["Yogur griego", "Granola", "Miel"],e:"🥣",p:3},
+  {n:"Queso fresco con fruta y nueces",q:"60 g de queso fresco, 1 taza de fruta y 15 g de nueces",k:330,i:["Queso fresco", "Fruta de la estación", "Nueces"],e:"🧀",p:3},
   {n:'Pan integral con quesillo y tomate + té',q:'1 pan, 2 láminas de quesillo y ½ tomate',k:330,i:['Pan integral','Quesillo','Tomate','Té'],e:'🧀'},
   {n:'Pan con huevo + té',q:'1 pan y 1 huevo',k:340,i:['Pan integral','Huevos','Té'],e:'🍳'},
   {n:'Yogur con fruta picada',q:'1 yogur y 1 taza de fruta',k:250,i:['Yogur natural','Manzana','Plátano'],e:'🍓'},
@@ -754,6 +876,13 @@ const FOOD={
   {n:'Fruta y un puñado de maní',q:'1 fruta y un puñado chico de maní (20 g)',k:260,i:['Manzana','Maní'],e:'🥜'},
   {n:'Pan con jamón de pavo y tomate',q:'1 pan y 2 láminas de jamón',k:310,i:['Pan integral','Jamón de pavo','Tomate'],e:'🥪'}],
  cena:[
+  {n:"Omelette de espinaca y queso",q:"2 huevos, 1 taza de espinaca y 1 lámina de queso",k:300,i:["Huevos", "Espinaca", "Queso"],e:"🍳",p:2},
+  {n:"Ensalada con pollo",q:"1 plato grande de ensalada y 120 g de pechuga de pollo",k:330,i:["Lechuga", "Tomate", "Pepino", "Pechuga de pollo"],e:"🥗",p:2},
+  {n:"Crema de zapallo con pollo",q:"1 plato de crema y 100 g de pechuga de pollo",k:320,i:["Zapallo", "Pechuga de pollo", "Cebolla"],e:"🎃",p:2},
+  {n:"Wrap de pollo",q:"1 tortilla grande, 100 g de pechuga de pollo y verduras a gusto",k:380,i:["Tortillas de wrap", "Pechuga de pollo", "Lechuga", "Tomate"],e:"🌯",p:2},
+  {n:"Ensalada César con pollo",q:"1 plato grande de ensalada y 120 g de pechuga de pollo",k:420,i:["Lechuga", "Pechuga de pollo", "Queso parmesano", "Crutones"],e:"🥗",p:3},
+  {n:"Salmón con verduras al vapor",q:"130 g de salmón y 1½ taza de verduras",k:400,i:["Salmón", "Brócoli", "Zanahoria"],e:"🐟",p:3},
+  {n:"Tortilla de claras con espinaca y champiñones",q:"4 claras, 1 taza de espinaca y 1 taza de champiñones",k:200,i:["Huevos", "Espinaca", "Champiñones"],e:"🍳",p:3},
   {n:'Sopa de verduras con huevo',q:'1 plato hondo y 1 huevo',k:330,i:['Zapallo','Zanahoria','Papas','Huevos'],e:'🍜'},
   {n:'Ensalada grande con atún',q:'1 plato grande y ½ lata de atún',k:350,i:['Lechuga','Tomate','Atún en lata','Zanahoria'],e:'🥗'},
   {n:'Tortilla de verduras',q:'2 huevos con 1 taza de verduras',k:340,i:['Huevos','Zapallo italiano','Cebolla','Espinaca'],e:'🍳'},
@@ -764,6 +893,12 @@ const FOOD={
   {n:'Ensalada de garbanzos',q:'¾ taza de garbanzos con verduras',k:370,i:['Garbanzos','Tomate','Cebolla','Pepino'],e:'🥗'},
   {n:'Sopa de lentejas liviana',q:'1 plato hondo',k:340,i:['Lentejas','Zanahoria','Cebolla'],e:'🍲'}],
  col:[
+  {n:"Almendras",q:"30 g de almendras",k:175,i:["Almendras"],e:"🥜",p:2},
+  {n:"Yogur con frutillas",q:"1 yogur y ½ taza de frutillas",k:120,i:["Yogur", "Frutillas"],e:"🍓",p:2},
+  {n:"Barrita de cereal y manzana",q:"1 barrita de cereal y 1 manzana",k:180,i:["Barritas de cereal", "Manzana"],e:"🍎",p:2},
+  {n:"Mix de frutos secos",q:"30 g de mix de frutos secos",k:180,i:["Mix de frutos secos"],e:"🌰",p:3},
+  {n:"Barrita de proteína",q:"1 barrita de proteína",k:200,i:["Barritas de proteína"],e:"🍫",p:3},
+  {n:"Hummus con zanahoria",q:"3 cucharadas de hummus y 1 zanahoria",k:150,i:["Hummus", "Zanahoria"],e:"🥕",p:3},
   {n:'Manzana',q:'1 manzana',k:80,i:['Manzana'],e:'🍎'},{n:'Plátano',q:'1 plátano',k:100,i:['Plátano'],e:'🍌'},
   {n:'Zanahoria en palitos',q:'1 zanahoria',k:50,i:['Zanahoria'],e:'🥕'},{n:'Yogur natural',q:'1 yogur',k:110,i:['Yogur natural'],e:'🥛'},
   {n:'Puñado de maní (30 g)',q:'30 g de maní',k:170,i:['Maní'],e:'🥜'},{n:'Naranja',q:'1 naranja',k:70,i:['Naranja'],e:'🍊'},
@@ -774,8 +909,9 @@ const DIAS=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'
 /* lunes de la semana de una fecha (igual en las dos apps, así comen lo mismo) */
 function lunesDe(d){d=new Date(d);d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d}
 function semilla(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return()=>{h=Math.imul(h^(h>>>15),2246822507);h=Math.imul(h^(h>>>13),3266489909);h^=h>>>16;return(h>>>0)/4294967296}}
-function planSemana(d){const L=lunesDe(d),key=ds(L);const rnd=semilla('menu-'+key);const plan=DIAS.map(()=>({}));
-  for(const[c]of COMIDAS){const idx=FOOD[c].map((_,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
+function presuOk(r){const p=r.p||1,b=(S&&S.profile&&S.profile.presu)||'barata';return b==='barata'?p===1:b==='normal'?p<=2:p>=2}
+function planSemana(d){const L=lunesDe(d),key=ds(L);const rnd=semilla('menu-'+key+((S&&S.profile&&S.profile.presu)||''));const plan=DIAS.map(()=>({}));
+  for(const[c]of COMIDAS){let idx=FOOD[c].map((_,i)=>i).filter(i=>presuOk(FOOD[c][i]));if(!idx.length)idx=FOOD[c].map((_,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
     for(let d2=0;d2<7;d2++)plan[d2][c]=idx[d2%idx.length]}
   return{key,plan}}
 function FS(){if(!S.food)S.food={log:{},sexo:((S&&S.profile&&S.profile.sexo)||'h')};if(!S.food.log)S.food.log={};return S.food}
@@ -789,9 +925,9 @@ function metas(fecha){const f=FS(),w=curW(),h=S.profile.height||170,a=num(f.edad
   const piso=Math.max(Math.round(tmb),hom?1500:1200),meta=Math.max(piso,Math.round((gasto-planDef())/10)*10);
   const entreno=!!ex.id,agua=Math.min(4,Math.max(1.5,Math.round(w*0.035*10)/10)+(entreno?0.5:0));
   return{tmb:Math.round(tmb),base:Math.round(base),ex,gasto,meta,agua,vasos:Math.round(agua/0.25)}}
-const ESC_PL={taza:'tazas',lata:'latas',cucharada:'cucharadas',huevo:'huevos',pan:'panes',plátano:'plátanos',manzana:'manzanas',naranja:'naranjas',presa:'presas',trutro:'trutros',yogur:'yogures',rebanada:'rebanadas',lámina:'láminas',papa:'papas',fruta:'frutas',pepino:'pepinos',zanahoria:'zanahorias',plato:'platos',tomate:'tomates',palta:'paltas',tortilla:'tortillas',integral:'integrales',mediana:'medianas',grande:'grandes',hondo:'hondos',natural:'naturales'};
+const ESC_PL={clara:'claras',barrita:'barritas',griego:'griegos',mediano:'medianos',taza:'tazas',lata:'latas',cucharada:'cucharadas',huevo:'huevos',pan:'panes',plátano:'plátanos',manzana:'manzanas',naranja:'naranjas',presa:'presas',trutro:'trutros',yogur:'yogures',rebanada:'rebanadas',lámina:'láminas',papa:'papas',fruta:'frutas',pepino:'pepinos',zanahoria:'zanahorias',plato:'platos',tomate:'tomates',palta:'paltas',tortilla:'tortillas',integral:'integrales',mediana:'medianas',grande:'grandes',hondo:'hondos',natural:'naturales'};
 const ESC_SG=Object.fromEntries(Object.entries(ESC_PL).map(([a,b])=>[b,a]));
-const ESC_ENTERO=/^(huevos?|láminas?|rebanadas?|presas?|trutros?|yogur(es)?|papas?|cucharadas?)$/;
+const ESC_ENTERO=/^(claras?|barritas?|huevos?|láminas?|rebanadas?|presas?|trutros?|yogur(es)?|papas?|cucharadas?)$/;
 const ESC_MEDIO=/^(pan(es)?|plátanos?|manzanas?|naranjas?|frutas?|pepinos?|zanahorias?|platos?)$/;
 function escNum(s){const F={'¼':.25,'½':.5,'¾':.75};const m=s.match(/^(\d+)?([¼½¾])?$/);return (m[1]?+m[1]:0)+(m[2]?F[m[2]]:0)}
 function escFmt(v){const e=Math.floor(v+1e-9),r=Math.round((v-e)*4)/4;const fr={0:'',.25:'¼',.5:'½',.75:'¾'}[r];return (e||!fr?String(e):'')+fr}
@@ -888,7 +1024,7 @@ function verSemana(){const{plan}=planSemana(new Date()),hoyI=(new Date().getDay(
 function verLista(){const{plan}=planSemana(new Date());const cnt={};
   plan.forEach(d=>COMIDAS.forEach(([c])=>FOOD[c][d[c]].i.forEach(x=>cnt[x]=(cnt[x]||0)+1)));
   const L=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);const key='lc_'+planSemana(new Date()).key;const chk=new Set((FS()[key])||[]);
-  openModal(`<h2 style="margin-top:0">🛒 Lista de compras</h2><p class="small mut" style="margin-top:-4px">Todo lo de esta semana, con ingredientes baratos de feria y supermercado. Toca para marcar lo que ya tienes.</p>
+  openModal(`<h2 style="margin-top:0">🛒 Lista de compras</h2><p class="small mut" style="margin-top:-4px">Todo lo de esta semana${{barata:', con ingredientes baratos de feria y supermercado',normal:'',cara:''}[S.profile.presu||'barata']}. Toca para marcar lo que ya tienes.</p>
   <div class="lista">${L.map(([x,n])=>`<button class="li ${chk.has(x)?'on':''}" data-li="${esc(x)}"><span class="ck">${chk.has(x)?'✓':''}</span>${esc(x)}<span class="mut small">${n}×</span></button>`).join('')}</div>
   <button class="btn" id="lOk" style="width:100%;margin-top:12px">Listo</button>`);
   document.querySelectorAll('[data-li]').forEach(b=>b.onclick=()=>{const s2=new Set(FS()[key]||[]);const x=b.dataset.li;s2.has(x)?s2.delete(x):s2.add(x);FS()[key]=[...s2];save();b.classList.toggle('on');b.querySelector('.ck').textContent=s2.has(x)?'✓':''});
@@ -1036,7 +1172,7 @@ function entrenar(){
     <div class="day ${i===dow?'today':''}">${names[i]}</div>
     <div style="flex:1"><b>${wo?wo.n:'Descanso'}</b><div class="small mut">${wo?('~'+estMin(wo)+' min'):'Recuperación'}</div></div>${wo&&i<=dow?(S.sessions.some(s=>s.d===fechaI(i))?'<span class="hok">✓ Hecho</span>':`<button class="btn sm yah" data-ya="${i}">Ya hice este día</button>`):(wo?'<span>›</span>':'')}</div>`;}).join('');
   view.innerHTML=`
-  <div class="card"><h2>Semana ${w} · Fase ${pi+1}: ${PHASES[pi].n}</h2><p class="small mut" style="margin:0">${PHASES[pi].desc}${sinImp()?' Tu plan va sin saltos ni trote.':''}</p><button class="btn w sm" id="vPlan" style="margin-top:10px">📋 Ver mi plan</button></div>
+  <div class="card"><h2>Semana ${w} · Fase ${pi+1}: ${PHASES[pi].n}</h2><p class="small mut" style="margin:0">${PHASES[pi].desc}${sinImp()?' Tu plan va sin saltos ni trote.':''} Los ejercicios van cambiando cada 2 semanas.</p><button class="btn w sm" id="vPlan" style="margin-top:10px">📋 Ver mi plan</button></div>
   <div class="card list" id="wkList">${list}</div>
   <div class="card hecho"><div><b>¿Entrenaste otro día y no quedó anotado?</b><div class="small mut">Para días de semanas anteriores.</div></div><button class="btn sm" id="anotar">✅ Anotar</button></div>
   ${pareja()?`<div class="card"><h2>👯 Entrenan juntos</h2><p class="small mut" style="margin:0">Si ${esc(compaN())} también usa la app con los mismos días, les toca lo mismo: ${horarioTxt()}. Cada uno con su intensidad.</p></div>`:''}
@@ -1049,7 +1185,7 @@ function entrenar(){
   document.querySelectorAll('[data-ya]').forEach(b=>b.onclick=e=>{e.stopPropagation();const i=+b.dataset.ya,id=sch[i],wo=workout(id,pi,w);S.sessions.push({d:fechaI(i),id,n:wo.n,mins:estMin(wo),rate:2,manual:true});S.sessions.sort((a,b)=>a.d<b.d?-1:1);save();render(false)});
   document.querySelectorAll('#wkList .it').forEach(el=>{const id=sch[+el.dataset.i]; if(id) el.onclick=()=>showWorkout(workout(id,pi,w));});
   const lib=$('#lib');
-  Object.keys(EX).forEach(k=>{const d=document.createElement('div'); d.className='ex'; d.innerHTML=`<div class="anim"></div>${EX[k].n}`; lib.appendChild(d); mountAnim(d.querySelector('.anim'),k,isDark()); d.onclick=()=>showEx(k);});
+  Object.keys(EX).filter(disponible).forEach(k=>{const d=document.createElement('div'); d.className='ex'; d.innerHTML=`<div class="anim"></div>${EX[k].n}`; lib.appendChild(d); mountAnim(d.querySelector('.anim'),k,isDark()); d.onclick=()=>showEx(k);});
 }
 function showEx(k){
   const x=EX[k];
